@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
     <meta name="viewport" content="width=device-width">
     <title>.:Laboratorio Científico:.</title>
-  <!-- Bootstrap core CSS     -->
-  <link href="../../../images/assets/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Animation library for notifications   -->
-  <link href="../../../images/assets/css/animate.min.css" rel="stylesheet">
-  <!--  Light Bootstrap Table core CSS    -->
-  <link href="../../../images/assets/css/light-bootstrap-dashboard.css" rel="stylesheet">
-  <!--  CSS for Demo Purpose, don't include it in your project     -->
-  <link href="../../../images/assets/css/demo.css" rel="stylesheet">
-  <!--     Fonts and icons     -->
-  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
-  <link href="../../../images/assets/css/pe-icon-7-stroke.css" rel="stylesheet">
+    <!-- Bootstrap core CSS     -->
+    <link href="../../../images/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Animation library for notifications   -->
+    <link href="../../../images/assets/css/animate.min.css" rel="stylesheet">
+    <!--  Light Bootstrap Table core CSS    -->
+    <link href="../../../images/assets/css/light-bootstrap-dashboard.css" rel="stylesheet">
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    <link href="../../../images/assets/css/demo.css" rel="stylesheet">
+    <!--     Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+    <link href="../../../images/assets/css/pe-icon-7-stroke.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.dataTables.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src=" https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
+
 </head>
 <body>
 <div id="wrapper">
@@ -35,15 +38,7 @@
       <nav class="navbar navbar-default navbar-fixed">
         <div class="container-fluid">
           <div class="navbar-header"> <a class="navbar-brand" href="#">Profile</a> </div>
-          <div class="collapse navbar-collapse">
-              <ul class="nav navbar-nav navbar-left">
-                  <li class="dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="linkOrdenes">
-                  </a>
-                      <ul class="dropdown-menu" id="dropOrdenes">
-                  </ul>
-                  </li>
-              </ul>
+          <div class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-left"><li class="dropdown">                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="linkOrdenes">                              </a>                              <ul class="dropdown-menu" id="dropOrdenes">                              </ul>                        </li>               </ul>
             <ul class="nav navbar-nav navbar-right">
               <li> <a href="#">
                                 Log out
@@ -59,15 +54,21 @@
             <div class="col-md-12">
               <div class="card">
                 <div class="header">
-                  <h4 class="title">Bodegas</h4>
-                    <p class="category">Lista de Bodegas</p>
+                  <h4 class="title">Ajustes de inventario</h4>
+                    <p class="category">Lista de Ajustes - Inventario</p>
                 </div>
-                    <form id="formBodegas" style="padding: 20px">
-                    <div style="text-align: center;">
-                        <a href="../bodega" class="btn btn-primary" role="button">Crear Bodega</a>
-                        <a id="btnEditarBodega" href="../bodega" class="btn btn-primary" role="button">Editar Bodega</a>
-                        <a href="../">Cancelar</a>
+                   <div id="mensaje_ok" class="alert alert-info">
+                        <label id="mensaje1_ok"></label>
                     </div>
+                    <div id="mensaje" class="alert alert-warning">
+                        <label id="mensaje1"></label>
+                    </div>
+                    <form id="formAjuste" action = "../aprobarAjuste/" method = "post" style="padding: 20px">
+                        <div style="text-align: center;">
+                            <input id="btnAjuste" type="submit" name="btnAjuste" value="Aprobar" class="btn btn-primary"/>
+                            <input id="id_a" name="id_a" type="hidden" />
+                            <a href="../">Cancelar</a>
+                        </div>
                         <table id="tabla" class="table table-striped dt-responsive nowrap" cellspacing="0" width="100%"></table>
                     </form>
                 </div>
@@ -91,19 +92,22 @@
   <script src="../../../images/assets/js/light-bootstrap-dashboard.js"></script>
 <!-- Light Bootstrap Table DEMO methods, don't include it in your project! -->
   <script src="../../../images/assets/js/demo.js"></script>
+
 <script>
     (function(){
         try {
             $("#modal2").load("../modal_or");$("#encabezado").load("../encabezado");
             $("#pie").load("../pie"); demo.actualizarNotificaciones();
-            $('#btnEditarBodega').attr('disabled', true);
-            $('#btnEditarBodega').bind('click', false);
+            $('#btnAjuste').attr('disabled', true);
+            $('#btnAjuste').bind('click', false);
+            $("#mensaje_ok").hide();
+            $("#mensaje").hide();
         }catch (exc){
             alert(exc.message);
         }
     })();
     $(function () {
-        $.getJSON("../obtenerBodegas").done(function (data) {
+        $.getJSON("../obtenerAjustes").done(function (data) {
             datos =  $.parseJSON(data);
             var tabla = $('#tabla').DataTable( {
                 "language": {
@@ -111,42 +115,65 @@
                 },
                 bProcessing: true,
                 "scrollX": true,
+                "order": [[ 5, "desc" ]],
                 aaData: datos,
                 aoColumns: [
                     { mData: "id" , sTitle: "Id"},
-                    { mData: "nombre" , sTitle: "Nombre"},
-                    { mData: "serial" , sTitle: "Serial"},
-                    { mData: "niveles" , sTitle: "Niveles"},
-                    { mData: "secciones" , sTitle: "Secciones"},
-                    { mData: "temperatura_minima" , sTitle: "Temperatura Minima"},
-                    { mData: "temperatura_media" , sTitle: "Temperatura Media"},
-                    { mData: "ubicacion" , sTitle: "Ubicacion"},
-                    { mData: "tipo_bodega" , sTitle: "Tipo Bodega"},
-                    { mData: "estado" , sTitle: "Estado"},
-                    { mData: "responsable" , sTitle: "Responsable"},
-                    { mData: "unidad_medida" , sTitle: "Unidad Medida"}
+                    { mData: "producto" , sTitle: "Producto"},
+                    { mData: "bodega" , sTitle: "Bodega"},
+                    { mData: "tipo_diferencia" , sTitle: "Diferencia"},
+                    { mData: "diferencia_cantidad" , sTitle: "Cantidad"},
+                    { mData: "estado" , sTitle: "Estado Ajuste"},
+
                 ],
             } );
             $('#tabla tbody').on( 'click', 'tr', function () {
                 if ( $(this).hasClass('selected') ) {
                     $(this).removeClass('selected');
-                    $('#btnEditarBodega').attr('disabled', true);
-                    $('#btnEditarBodega').bind('click', false);
+                    $('#btnAjuste').attr('disabled', true);
+                    $('#btnAjuste').bind('click', false);
                 }
                 else {
+                    $("#mensaje_ok").hide();
+                    $("#mensaje").hide();
                     tabla.$('tr.selected').removeClass('selected');
                     $(this).addClass('selected');
-                    valor = $("#btnEditarBodega").attr('href');
-                    if (valor.indexOf("id_bodega")!=-1){
-                        valor = valor.split("?")[0];
+                    valor = $(this).children()[0].innerText;
+                    if ($(this).children()[5].innerText == "En aprobacion") {
+                        $('#id_a').attr('value', valor);
+                        $('#btnAjuste').unbind('click', false);
+                        $('#btnAjuste').attr('disabled', false);
+                    }else {
+                        $('#btnAjuste').unbind('click', true);
+                        $('#btnAjuste').attr('disabled', true);
                     }
-                    valor += "?id_bodega="+$(this).children()[0].innerText;
-                    $("#btnEditarBodega").attr("href", valor);
-                    $('#btnEditarBodega').unbind('click', false);
-                    $('#btnEditarBodega').attr('disabled', false);
                 }
             });
         });
+    });
+
+     $('#formAjuste').submit(function (e) {
+        var formData = new FormData($("#formAjuste")[0]);
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data && data.mensaje && data.mensaje != "ok") {
+                    $("#mensaje1").text(data.mensaje);
+                    $("#mensaje").show();
+                } else {
+                    $("#mensaje1_ok").text("Aprobación exitosa");
+                    $("#mensaje_ok").show();
+                }
+                setTimeout(function(){
+                    location.reload();
+                },1000);
+            }
+        });
+        e.preventDefault();
     });
     /*
     $('form').submit(function (e) {

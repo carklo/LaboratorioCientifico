@@ -37,6 +37,14 @@
             <div class="container-fluid">
                 <div class="navbar-header"> <a class="navbar-brand" href="#">Profile</a> </div>
                 <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="linkOrdenes">
+                        </a>
+                        <ul class="dropdown-menu" id="dropOrdenes">
+                        </ul>
+                    </li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li> <a href="#">
                             Log out
@@ -183,7 +191,8 @@
         </div>
         <div id="pie"></div>
     </div>
-    <div id="modal1" class="card"></div>
+    <div id="modal1" class="card" style="display: initial"></div>
+    <div id="modal2" class="card" style="display: initial"></div>
 </div>
 </body>
 <script src="../../../images/assets/js/bootstrap.min.js"></script>
@@ -195,6 +204,8 @@
 <script src="../../../images/assets/js/bootstrap-notify.js"></script>
 <!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
 <script src="../../../images/assets/js/light-bootstrap-dashboard.js"></script>
+<!-- Light Bootstrap Table DEMO methods, don't include it in your project! -->
+  <script src="../../../images/assets/js/demo.js"></script>
 <script>
     contadorItems = 1;
     orden = new Orden();
@@ -212,8 +223,8 @@
     (function(){
         try {
             $("#modal1").load("../modal_do");
-            $("#encabezado").load("../encabezado");
-            $("#pie").load("../pie");
+            $("#modal2").load("../modal_or");$("#encabezado").load("../encabezado");
+            $("#pie").load("../pie"); demo.actualizarNotificaciones();
             var parametroMsj = GetParameterValues("msj");
             if (parametroMsj && parametroMsj=='ok'){
                 $("#mensaje_ok").show();
@@ -259,6 +270,12 @@
                         $("#usuario_creacion").val(op.fields["usuario_creacion"]);
                         $("#proveedor").val(op.fields["proveedor"]);
                         $("#estado").val(op.fields["estado"]);
+                        //Bug: si es estado Ingresada se ocultan datos de la bodega
+                        if (op.fields["estado"]==36){
+                            $("#lblBodega").hide();
+                            $("#slcBodega").hide();
+                            $("#divbodegaDestino").hide();
+                        }
                         orden.id = op.pk;
                         orden.idEstado = op.fields["estado"];
                         orden.idProveedor = op.fields["proveedor"];
@@ -277,10 +294,17 @@
                                     detalleOrden.no = contadorItems;
                                     detalleOrden.idProducto = detalle[indiceDetalle].idProducto;
                                     detalleOrden.nombreProducto = detalle[indiceDetalle].nombreProducto;
-                                    detalleOrden.idBodega = detalle[indiceDetalle].idBodega;
-                                    detalleOrden.nombreBodega = detalle[indiceDetalle].nombreBodega;
-                                    detalleOrden.nivel = detalle[indiceDetalle].nivel;
-                                    detalleOrden.seccion = detalle[indiceDetalle].seccion;
+                                    if (detalle[indiceDetalle].idBodega){
+                                        detalleOrden.idBodega = detalle[indiceDetalle].idBodega;
+                                        detalleOrden.nombreBodega = detalle[indiceDetalle].nombreBodega;
+                                        detalleOrden.nivel = detalle[indiceDetalle].nivel;
+                                        detalleOrden.seccion = detalle[indiceDetalle].seccion;
+                                    }else{
+                                        detalleOrden.idBodega = '';
+                                        detalleOrden.nombreBodega = '';
+                                        detalleOrden.nivel = '';
+                                        detalleOrden.seccion = '';
+                                    }
                                     detalleOrden.cantidad = detalle[indiceDetalle].cantidad;
                                     detalleOrden.valorUnitario = detalle[indiceDetalle].valorUnitario;
                                     detalleOrden.fechaMovimiento = detalle[indiceDetalle].fechaMovimiento;
@@ -289,9 +313,9 @@
                                     strInicio = "<tr class=\"bg-info\">";
                                     strCont =  "<td style=\"border: 1px solid #ddd;\">"+contadorItems+"</td>";
                                     strTd +=  "<td style=\"border: 1px solid #ddd;\">"+detalleOrden.nombreProducto+"</td>";
-                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+detalleOrden.nombreBodega+"</td>";
-                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+detalleOrden.nivel+"</td>";
-                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+detalleOrden.seccion+"</td>";
+                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+(detalleOrden.nombreBodega ? detalleOrden.nombreBodega : '')+"</td>";
+                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+(detalleOrden.nivel ? detalleOrden.nivel : '')+"</td>";
+                                    strTd +=  "<td style=\"border: 1px solid #ddd;\">"+(detalleOrden.seccion ? detalleOrden.seccion : '')+"</td>";
                                     strTd +=  "<td style=\"border: 1px solid #ddd;text-align: right;\">"+detalleOrden.valorUnitario+"</td>";
                                     strTd +=  "<td style=\"border: 1px solid #ddd;text-align: right;\">"+detalleOrden.cantidad+"</td>";
                                     var subTotal = detalleOrden.cantidad * detalleOrden.valorUnitario;
